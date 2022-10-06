@@ -1,0 +1,12 @@
+html
+include ../partials/head
+    title Login
+body
+include ../partials/header
+if errors
+    each error in errors
+        div(class="alert alert-danger") #{error}
+form(action='/login', method='POST')
+    input(class="form-control", name='login', placeholder='login', type='text')
+    input(class="form-control", name='password', placeholder='password', type='password')
+    input(value='Submit', type='submit')
