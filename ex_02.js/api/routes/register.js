@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const User = require("../model/user");
 const sha1 = require("sha1");
+const flash = require('connect-flash');
+const { arrayBuffer } = require('stream/consumers');
 
 function id_autoincrement(id) {
     //si il n'y a rien dans la collection, l'id est de 1
@@ -13,11 +15,15 @@ function id_autoincrement(id) {
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    return res.render("security/register");
+    if (!res.locals.errors){
+        return res.status(200).json({ "user": res.locals.user });
+    }
+    return res.status(400).json({"errors": res.locals.errors });
 });
 
 router.post('/', function(req, res, next) {
     User.find({}).sort({_id : -1 }).exec(function(err, user){
+        if (err) throw err;
         User.create({
             id: id_autoincrement(user[0]),
             login: req.body.login,
@@ -25,16 +31,15 @@ router.post('/', function(req, res, next) {
             password: sha1(req.body.password),
             type: false
         }, (error, user) => {
-            console.log(error);
             if (error && error.name === "ValidationError") {
-                let errors = {};
+                let errors = [];
           
                 Object.keys(error.errors).forEach((key) => {
-                  errors[key] = error.errors[key].message;
+                  errors.push(error.errors[key].message);
                 });
                 res.status(400);
-                console.log(errors);
-                return res.render("security/register", { errors: errors});
+                req.session.errors = errors;
+                return res.redirect("/register");
             }
             req.session.loggedIn = true;
             req.session.user = user;

@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var registerRouter = require('./routes/register');
+var flash = require('connect-flash');
 
 var app = express();
 
@@ -26,10 +27,14 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
+app.use(flash());
+
 
 app.use(function(req, res, next) {
     res.locals.login = req.session.login;
     res.locals.user = req.session.user;
+    res.locals.errors = req.session.errors;
+
     next();
 });
 
