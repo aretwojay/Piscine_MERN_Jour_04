@@ -1,5 +1,5 @@
 import { Header } from '../../components/Header';
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 
 export function Login() {
     const [backendData, setBackendData] = useState([{}]);
@@ -9,27 +9,28 @@ export function Login() {
             response => response.json(),
         ).then(
             data => {
-            setBackendData(data);
+                setBackendData(data);
             },
         )
     }, [])
-    console.log(backendData)
-  return (
-    <div>
-        <Header /> 
-        {(typeof backendData.error == 'undefined') ? (
-            <p></p>
-            ) : (
-                <div className="alert alert-danger">{backendData.error}</div>
-            )
-        }
-        <form action="/login" method="POST">
-            <input className="form-control" type="text" name="login" placeholder="login" />
-            <input className="form-control" type="password" name="password" placeholder="password" />
 
-            <input className="btn btn-dark" type="submit" value="Login" />
-        </form>
-    </div>
+    return (
+        <div>
+            <Header />
+            {(typeof backendData.errors == 'undefined') ? (
+                <p></p>
+            ) : (
+                backendData.errors.map((error, i) => (
+                    <div className="alert alert-danger" key={i}>{error}</div>
+                )))
+            }
+            <form action="/login" method="POST">
+                <input className="form-control" type="text" name="login" placeholder="login" />
+                <input className="form-control" type="password" name="password" placeholder="password" />
+
+                <input className="btn btn-dark" type="submit" value="Login" />
+            </form>
+        </div>
     )
 }
 

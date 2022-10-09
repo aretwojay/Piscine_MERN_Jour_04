@@ -41,8 +41,6 @@ router.post('/', function(req, res, next) {
                 req.session.errors = errors;
                 return res.redirect("/register");
             }
-            req.session.loggedIn = true;
-            req.session.user = user;
             res.status(200);
             return res.redirect('/');
         })

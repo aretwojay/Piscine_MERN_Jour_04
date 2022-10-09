@@ -5,22 +5,12 @@ const sha1 = require("sha1");
 const flash = require('connect-flash');
 const session = require('express-session');
 
-function id_autoincrement(id) {
-    //si il n'y a rien dans la collection, l'id est de 1
-    if (id == undefined) {
-        return 1;
-    }
-    return parseInt(id["id"] + 1);
-}
-
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    if (!req.session.flash){
+    if (!res.locals.errors){
         return res.status(200).json({ "user": res.locals.user });
     }
-    console.log(req.session.flash);
-    res.status(400).json(req.session.flash);
-    req.session.destroy();
+    return res.status(400).json({"errors": res.locals.errors });
 });
 
 router.post('/', function(req, res, next) {
@@ -35,7 +25,7 @@ router.post('/', function(req, res, next) {
             res.status(200);
             return res.redirect('/');
         }
-        req.flash("error", "Vos identifiants sont incorrects.");
+        req.session.errors = ["Vos identifiants sont incorrects"];
         return res.redirect('/login');
     });
 });
